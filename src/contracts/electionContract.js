@@ -16,7 +16,7 @@ export const TEMA_WARNA_KANDIDAT = [
 // Data awal (mock starter) agar pengguna langsung melihat tampilan visual yang siap digunakan
 export const DATA_AWAL_PEMILIHAN = {
   judulPemilihan: 'Pemilihan Ketua & Wakil Ketua OSIS',
-  namaSekolah: 'SMA / SMK Negeri Indonesia',
+  namaSekolah: 'SMPN 3 Cibungbulang',
   tahunPeriode: '2026/2027',
   kandidat: [
     {
@@ -24,9 +24,9 @@ export const DATA_AWAL_PEMILIHAN = {
       nomorUrut: 1,
       namaKetua: 'Ahmad Faiz Pratama',
       namaWakil: 'Nadia Salsabila',
-      kelasKetua: 'XI MIPA 1',
-      kelasWakil: 'XI IPS 2',
-      visi: 'Mewujudkan OSIS yang aspiratif, aktif, inovatif, dan berakhlak mulia.',
+      kelasKetua: 'VIII-A',
+      kelasWakil: 'VIII-C',
+      visi: 'Mewujudkan OSIS SMPN 3 Cibungbulang yang aspiratif, aktif, dan berakhlak mulia.',
       suara: 0,
       warnaTema: '#2563eb'
     },
@@ -35,8 +35,8 @@ export const DATA_AWAL_PEMILIHAN = {
       nomorUrut: 2,
       namaKetua: 'Bima Satria Wijaya',
       namaWakil: 'Zahra Putri Ramadhani',
-      kelasKetua: 'XI IPS 1',
-      kelasWakil: 'XI MIPA 3',
+      kelasKetua: 'VIII-B',
+      kelasWakil: 'VIII-D',
       visi: 'Membangun sinergi siswa yang kreatif, peduli lingkungan, dan berprestasi.',
       suara: 0,
       warnaTema: '#059669'

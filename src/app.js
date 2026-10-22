@@ -57,6 +57,16 @@ let undoTimeoutId = null;
  * Inisialisasi awal saat dokumen dimuat
  */
 function inisialisasiAplikasi() {
+  // Sinkronkan nama sekolah dan tahun periode ke antarmuka
+  const subtitleEl = document.getElementById('header-subtitle');
+  if (subtitleEl && appState.namaSekolah) {
+    subtitleEl.textContent = `${appState.namaSekolah} — Periode ${appState.tahunPeriode || '2026/2027'}`;
+  }
+  const printSchoolEl = document.getElementById('print-school-name');
+  if (printSchoolEl && appState.namaSekolah) {
+    printSchoolEl.textContent = appState.namaSekolah.toUpperCase();
+  }
+
   siapkanPilihanWarna();
   pasangEventListeners();
   perbaruiTampilanAudio();

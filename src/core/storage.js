@@ -24,9 +24,14 @@ export function muatStatePemilihan() {
       return structuredClone(DATA_AWAL_PEMILIHAN);
     }
 
+    // Migrasi otomatis nama sekolah jika masih menggunakan placeholder lama
+    const namaSekolahAktual = (!parsed.namaSekolah || parsed.namaSekolah === 'SMA / SMK Negeri Indonesia')
+      ? DATA_AWAL_PEMILIHAN.namaSekolah
+      : parsed.namaSekolah;
+
     return {
       judulPemilihan: parsed.judulPemilihan || DATA_AWAL_PEMILIHAN.judulPemilihan,
-      namaSekolah: parsed.namaSekolah || DATA_AWAL_PEMILIHAN.namaSekolah,
+      namaSekolah: namaSekolahAktual,
       tahunPeriode: parsed.tahunPeriode || DATA_AWAL_PEMILIHAN.tahunPeriode,
       kandidat: parsed.kandidat,
       suaraTidakSah: typeof parsed.suaraTidakSah === 'number' ? parsed.suaraTidakSah : 0,
