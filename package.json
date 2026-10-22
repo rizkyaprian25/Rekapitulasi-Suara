@@ -1,0 +1,21 @@
+{
+  "name": "rekapitulasi-suara-osis",
+  "version": "1.0.0",
+  "description": "Aplikasi Web Rekapitulasi dan Perhitungan Suara Pemilihan OSIS Cepat dan Akurat",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node test/smoke-test.js"
+  },
+  "keywords": [
+    "osis",
+    "pemilihan-osis",
+    "rekapitulasi-suara",
+    "quick-count",
+    "e-voting-tally"
+  ],
+  "author": "Antigravity Engineering",
+  "license": "MIT"
+}

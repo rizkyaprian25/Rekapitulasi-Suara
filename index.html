@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rekapitulasi Suara Pemilihan OSIS</title>
+  <meta name="description" content="Aplikasi Web Rekapitulasi dan Perhitungan Suara Pemilihan Ketua dan Wakil Ketua OSIS Cepat dan Akurat">
+  <link rel="stylesheet" href="src/styles/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗳️</text></svg>">
+</head>
+<body>
+
+  <!-- KERANGKA UTAMA APLIKASI WEB -->
+  <div class="app-container">
+    
+    <!-- HEADER & STATUS SISTEM -->
+    <header class="site-header">
+      <div class="brand-wrapper">
+        <div class="brand-icon" aria-hidden="true">🗳️</div>
+        <div class="brand-meta">
+          <h1 id="header-title">Pemilihan Ketua & Wakil Ketua OSIS</h1>
+          <p id="header-subtitle">Rekapitulasi Suara Real-Count — Periode 2026/2027</p>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <button id="btn-modal-tambah" class="btn btn-primary" title="Tambah Kandidat Baru">
+          <span>➕</span>
+          <span>Tambah Kandidat</span>
+        </button>
+
+        <button id="btn-toggle-sound" class="btn btn-secondary" title="Nyalakan / Matikan Suara Klik">
+          <span id="sound-icon">🔊</span>
+          <span id="sound-label">Suara Aktif</span>
+        </button>
+
+        <button id="btn-cetak-laporan" class="btn btn-secondary" title="Cetak Berita Acara Rekapitulasi">
+          <span>🖨️</span>
+          <span>Cetak Berita Acara</span>
+        </button>
+
+        <button id="btn-reset-modal" class="btn btn-danger-subtle" title="Setel Ulang Perhitungan Suara">
+          <span>🔄</span>
+          <span>Reset Suara</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- PAPAN STATISTIK RINGKASAN REKAPITULASI (SSOT STATS) -->
+    <section class="stats-grid" aria-label="Statistik Suara">
+      <div class="stat-card total-masuk">
+        <span class="stat-label">Total Suara Masuk</span>
+        <span id="stat-total-masuk" class="stat-value tabular-nums">0</span>
+        <span class="stat-subtext">Akumulasi seluruh surat suara di TPS</span>
+      </div>
+
+      <div class="stat-card total-sah">
+        <span class="stat-label">Suara Sah</span>
+        <span id="stat-suara-sah" class="stat-value tabular-nums" style="color: var(--accent-success);">0</span>
+        <span id="stat-persen-sah" class="stat-subtext">0% dari total suara</span>
+      </div>
+
+      <div class="stat-card total-tidak-sah">
+        <span class="stat-label">Suara Tidak Sah / Rusak</span>
+        <span id="stat-suara-rusak" class="stat-value tabular-nums" style="color: var(--accent-warning);">0</span>
+        <span id="stat-persen-rusak" class="stat-subtext">0% dari total suara</span>
+      </div>
+    </section>
+
+    <!-- DAFTAR KANDIDAT & TOMBOL HITUNG CEPAT SEKALI KLIK -->
+    <main>
+      <div class="candidates-section-header">
+        <h2 class="section-title">Perolehan Suara Kandidat</h2>
+        <span class="text-muted" style="font-size: 0.8125rem;">
+          💡 Tip: Tekan angka di keyboard (1, 2, 3...) untuk tambah suara cepat
+        </span>
+      </div>
+
+      <!-- GRID KARTU KANDIDAT (DI-RENDER DINAMIS) -->
+      <div id="candidate-grid" class="candidate-grid">
+        <!-- Konten kandidat di-render oleh app.js -->
+      </div>
+
+      <!-- KOTAK PENCATATAN SUARA TIDAK SAH -->
+      <div class="invalid-vote-card">
+        <div class="invalid-info">
+          <h3>⚠️ Surat Suara Rusak / Tidak Sah</h3>
+          <p>Klik tombol jika surat suara robek, dicoblos ganda di luar ketentuan, atau tidak sah.</p>
+        </div>
+        <button id="btn-tambah-tidak-sah" class="btn btn-secondary" style="border-color: #f59e0b; color: #b45309; font-weight: 700;">
+          <span>➕ 1 Suara Tidak Sah</span>
+        </button>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- BILAH PEMBATALAN CEPAT (UNDO FLOATING BAR) -->
+  <aside id="undo-bar" class="undo-bar" style="display: none;" aria-live="polite">
+    <span id="undo-text" class="undo-text">Suara ditambahkan</span>
+    <button id="btn-undo" class="btn-undo-action" title="Batalkan penambahan suara terakhir">
+      ↩️ Batalkan (Undo)
+    </button>
+  </aside>
+
+  <!-- MODAL FORM TAMBAH KANDIDAT -->
+  <div id="modal-tambah-kandidat" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Tambah Kandidat Paslon OSIS</h3>
+        <button id="btn-tutup-modal" class="btn-close-modal" aria-label="Tutup">&times;</button>
+      </div>
+      <form id="form-tambah-kandidat">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="input-nomor-urut">Nomor Urut *</label>
+              <input type="number" id="input-nomor-urut" class="form-input" min="1" required>
+            </div>
+            <div class="form-group">
+              <label>Warna Paslon</label>
+              <div id="color-options-container" class="color-picker-group">
+                <!-- Pilihan warna dirender via JS -->
+              </div>
+              <input type="hidden" id="input-warna-tema" value="#2563eb">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="input-nama-ketua">Nama Calon Ketua *</label>
+              <input type="text" id="input-nama-ketua" class="form-input" placeholder="Misal: Ahmad Faiz" required>
+            </div>
+            <div class="form-group">
+              <label for="input-kelas-ketua">Kelas Ketua</label>
+              <input type="text" id="input-kelas-ketua" class="form-input" placeholder="Misal: XI MIPA 1">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="input-nama-wakil">Nama Calon Wakil</label>
+              <input type="text" id="input-nama-wakil" class="form-input" placeholder="Misal: Nadia Salsabila">
+            </div>
+            <div class="form-group">
+              <label for="input-kelas-wakil">Kelas Wakil</label>
+              <input type="text" id="input-kelas-wakil" class="form-input" placeholder="Misal: XI IPS 2">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="input-visi">Visi / Slogan Paslon</label>
+            <textarea id="input-visi" class="form-textarea" rows="2" placeholder="Tulis visi atau moto kampanye singkat..."></textarea>
+          </div>
+
+          <div id="form-error-msg" style="color: var(--accent-danger); font-size: 0.8125rem; display: none;"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-batal-kandidat" class="btn btn-secondary">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Kandidat</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL KONFIRMASI RESET -->
+  <div id="modal-konfirmasi-reset" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--accent-danger);">⚠️ Konfirmasi Reset Suara</h3>
+        <button id="btn-tutup-reset" class="btn-close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.875rem; color: var(--text-secondary);">
+          Apakah Anda yakin ingin <strong>mengosongkan seluruh perolehan suara</strong> menjadi nol kembali?
+        </p>
+        <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.5rem;">
+          Daftar kandidat tidak akan dihapus, hanya angka suara dan riwayat yang disetel ulang.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btn-batal-reset" class="btn btn-secondary">Batalkan</button>
+        <button type="button" id="btn-eksekusi-reset" class="btn btn-danger-subtle" style="background-color: var(--accent-danger); color: #fff;">
+          Ya, Kosongkan Suara
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAMPILAN BERITA ACARA CETAK RESMI (HANYA MUNCUL SAAT CETAK / PRINT TO PDF) -->
+  <section id="print-area" class="print-report-container" aria-hidden="true">
+    <div class="print-header">
+      <h2>KOMISI PEMILIHAN OSIS (KPPS)</h2>
+      <h3 id="print-school-name">SMA / SMK NEGERI INDONESIA</h3>
+      <p>BERITA ACARA REKAPITULASI HASIL PENGHITUNGAN SUARA PEMILIHAN OSIS</p>
+      <p id="print-date">Tanggal: -</p>
+    </div>
+
+    <p style="text-align: justify; line-height: 1.6; margin-bottom: 1rem;">
+      Pada hari ini telah dilaksanakan rekapitulasi perhitungan suara pemilihan Ketua dan Wakil Ketua OSIS secara terbuka, jujur, dan transparan dengan perolehan hasil sebagai berikut:
+    </p>
+
+    <table class="print-table">
+      <thead>
+        <tr>
+          <th style="width: 10%;">No. Urut</th>
+          <th style="width: 45%;">Nama Pasangan Calon</th>
+          <th style="width: 25%; text-align: right;">Perolehan Suara</th>
+          <th style="width: 20%; text-align: right;">Persentase</th>
+        </tr>
+      </thead>
+      <tbody id="print-table-body">
+        <!-- Diisi oleh JS saat perintah cetak -->
+      </tbody>
+      <tfoot>
+        <tr>
+          <th colspan="2">TOTAL SUARA SAH</th>
+          <th id="print-total-sah" style="text-align: right;">0</th>
+          <th id="print-persen-sah" style="text-align: right;">100%</th>
+        </tr>
+        <tr>
+          <th colspan="2">SUARA TIDAK SAH / RUSAK</th>
+          <th id="print-total-rusak" style="text-align: right;">0</th>
+          <th id="print-persen-rusak" style="text-align: right;">0%</th>
+        </tr>
+        <tr style="font-weight: bold;">
+          <th colspan="2">TOTAL SELURUH SUARA MASUK</th>
+          <th id="print-total-semua" style="text-align: right;">0</th>
+          <th style="text-align: right;">100%</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="signatures-grid">
+      <div class="signature-box">
+        <p>Saksi Paslon</p>
+        <div class="signature-line">( ........................................ )</div>
+      </div>
+      <div class="signature-box">
+        <p>Ketua Panitia KPPS OSIS</p>
+        <div class="signature-line">( ........................................ )</div>
+      </div>
+      <div class="signature-box">
+        <p>Pembina OSIS</p>
+        <div class="signature-line">( ........................................ )</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKRIP APLIKASI UTAMA (ES MODULES) -->
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
