@@ -11,7 +11,8 @@ import {
   tambahSuaraTidakSah,
   batalkanSuaraTerakhir,
   tambahKandidatKeState,
-  hapusKandidatDariState
+  hapusKandidatDariState,
+  hapusSemuaKandidatDariState
 } from '../src/features/tally/tallyEngine.js';
 
 console.log('🧪 Memulai Smoke Test Kualitas Sistem Rekapitulasi Suara OSIS...\n');
@@ -114,7 +115,12 @@ console.log('\n4. Menguji penambahan dan penghapusan kandidat dinamis...');
 
   state = hapusKandidatDariState(state, 'kandidat-3');
   assert.equal(state.kandidat.length, 2, 'Jumlah kandidat harus kembali menjadi 2');
-  console.log('   ✅ Operasi CRUD kandidat dinamis berhasil.');
+
+  // Pengujian hapus seluruh kandidat (bersihkan dummy)
+  state = hapusSemuaKandidatDariState(state);
+  assert.equal(state.kandidat.length, 0, 'Daftar kandidat harus kosong');
+  assert.equal(state.suaraTidakSah, 0, 'Suara tidak sah harus reset ke 0');
+  console.log('   ✅ Operasi CRUD kandidat dinamis & bersihkan dummy berhasil.');
 }
 
 console.log('\n🎉 SELURUH SMOKE TEST QUALITY GATE LULUS TANPA KESALAHAN! (0 Errors)\n');

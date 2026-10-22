@@ -4,7 +4,7 @@
  */
 
 import { TEMA_WARNA_KANDIDAT, validasiKandidat } from './contracts/electionContract.js';
-import { muatStatePemilihan, simpanStatePemilihan, resetSuara } from './core/storage.js';
+import { muatStatePemilihan, simpanStatePemilihan, resetSuara, resetKeDataAwal } from './core/storage.js';
 import { audioFeedback } from './core/audioFeedback.js';
 import {
   hitungStatistik,
@@ -12,7 +12,8 @@ import {
   tambahSuaraTidakSah,
   batalkanSuaraTerakhir,
   tambahKandidatKeState,
-  hapusKandidatDariState
+  hapusKandidatDariState,
+  hapusSemuaKandidatDariState
 } from './features/tally/tallyEngine.js';
 
 // State global aplikasi di memori
@@ -104,9 +105,20 @@ function renderKartuKandidat(daftarKandidat, kandidatIdAnimasi) {
 
   if (daftarKandidat.length === 0) {
     candidateGrid.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: var(--bg-surface); border-radius: var(--radius-xl); border: 1px dashed var(--border-subtle);">
-        <p style="font-size: 1.125rem; font-weight: 700; color: var(--text-secondary);">Belum ada kandidat terdaftar</p>
-        <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;">Klik tombol "Tambah Kandidat" di atas untuk menambahkan pasangan calon OSIS.</p>
+      <div class="empty-state-card">
+        <div style="font-size: 2.75rem; margin-bottom: 0.5rem;" aria-hidden="true">🗳️</div>
+        <h3>Belum Ada Pasangan Calon Terdaftar</h3>
+        <p>Seluruh data paslon dummy telah dibersihkan. Anda sekarang siap memasukkan pasangan calon resmi pemilihan OSIS SMPN 3 Cibungbulang.</p>
+        <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 1.25rem; flex-wrap: wrap;">
+          <button id="btn-empty-tambah" class="btn btn-primary">
+            <span>➕</span>
+            <span>Tambah Paslon Baru</span>
+          </button>
+          <button id="btn-muat-contoh" class="btn btn-secondary">
+            <span>🔄</span>
+            <span>Muat Kembali Data Contoh (Dummy)</span>
+          </button>
+        </div>
       </div>
     `;
     return;
@@ -146,6 +158,10 @@ function renderKartuKandidat(daftarKandidat, kandidatIdAnimasi) {
           <div class="candidate-sub-names">${namaWakilHtml}</div>
           ${badgeKelas}
         </div>
+        <button class="btn-hapus-paslon btn-hapus-kandidat" data-id="${kandidat.id}" data-nama="${escapeHtml(kandidat.namaKetua)}" title="Hapus paslon ini">
+          <span>🗑️</span>
+          <span>Hapus</span>
+        </button>
       </div>
 
       <div class="candidate-visi" title="${escapeHtml(kandidat.visi)}">
@@ -186,7 +202,7 @@ function renderKartuKandidat(daftarKandidat, kandidatIdAnimasi) {
             ${kandidat.persenTotal}% dari seluruh suara
           </span>
           <button class="btn-subtle-delete btn-hapus-kandidat" data-id="${kandidat.id}" data-nama="${escapeHtml(kandidat.namaKetua)}" title="Hapus kandidat ini">
-            Hapus
+            🗑️ Hapus Paslon Ini
           </button>
         </div>
       </div>
@@ -317,14 +333,29 @@ function pasangEventListeners() {
       return;
     }
 
-    // Tombol Hapus Kandidat
+    // Tombol Hapus Kandidat Satuan
     const btnHapus = e.target.closest('.btn-hapus-kandidat');
     if (btnHapus) {
       const kandidatId = btnHapus.dataset.id;
       const nama = btnHapus.dataset.nama;
-      if (confirm(`Apakah Anda yakin ingin menghapus kandidat "${nama}" dari daftar pemilihan?`)) {
+      if (confirm(`Apakah Anda yakin ingin menghapus paslon "${nama}" dari daftar pemilihan?`)) {
         appState = hapusKandidatDariState(appState, kandidatId);
         simpanStatePemilihan(appState);
+        renderSemua();
+      }
+      return;
+    }
+
+    // Tombol Tambah Paslon dari Empty State
+    if (e.target.closest('#btn-empty-tambah')) {
+      btnBukaModalTambah.click();
+      return;
+    }
+
+    // Tombol Muat Kembali Data Contoh dari Empty State
+    if (e.target.closest('#btn-muat-contoh')) {
+      if (confirm('Muat kembali pasangan calon contoh (dummy)?')) {
+        appState = resetKeDataAwal();
         renderSemua();
       }
       return;
@@ -421,6 +452,26 @@ function pasangEventListeners() {
     tutupModalReset();
     renderSemua();
   });
+
+  // Aksi Hapus Seluruh Kandidat (Kosongkan Data Dummy)
+  const handleHapusSemuaPaslon = () => {
+    if (confirm('Apakah Anda yakin ingin menghapus SELURUH pasangan calon dummy? Semua data paslon akan dikosongkan agar Anda dapat menginput paslon asli dari awal.')) {
+      appState = hapusSemuaKandidatDariState(appState);
+      simpanStatePemilihan(appState);
+      tutupModalReset();
+      renderSemua();
+    }
+  };
+
+  const btnHapusSemuaHeader = document.getElementById('btn-hapus-semua-kandidat');
+  if (btnHapusSemuaHeader) {
+    btnHapusSemuaHeader.addEventListener('click', handleHapusSemuaPaslon);
+  }
+
+  const btnEksekusiHapusSemua = document.getElementById('btn-eksekusi-hapus-semua');
+  if (btnEksekusiHapusSemua) {
+    btnEksekusiHapusSemua.addEventListener('click', handleHapusSemuaPaslon);
+  }
 
   // Cetak Berita Acara
   btnCetakLaporan.addEventListener('click', () => {

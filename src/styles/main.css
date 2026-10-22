@@ -524,19 +524,71 @@ body {
   margin-top: 0.25rem;
 }
 
+/* Tombol Hapus Paslon Nyata & Terlihat Jelas */
+.btn-hapus-paslon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #dc2626;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.btn-hapus-paslon:hover {
+  background-color: #fca5a5;
+  color: #991b1b;
+  transform: scale(1.04);
+}
+
+.empty-state-card {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3.5rem 2rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  border: 2px dashed var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.empty-state-card p {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  max-width: 480px;
+  line-height: 1.5;
+}
+
 .btn-subtle-delete {
   font-size: 0.75rem;
-  color: var(--text-light);
-  background: none;
-  border: none;
+  color: #dc2626;
+  font-weight: 600;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem 0.6rem;
   border-radius: var(--radius-sm);
-  transition: color var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .btn-subtle-delete:hover {
-  color: var(--accent-danger);
+  background-color: #fca5a5;
+  color: #991b1b;
 }
 
 /* Kotak Khusus Suara Tidak Sah */

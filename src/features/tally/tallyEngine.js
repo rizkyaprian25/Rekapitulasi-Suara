@@ -182,3 +182,17 @@ export function hapusKandidatDariState(state, kandidatId) {
     riwayatUndo: (state.riwayatUndo || []).filter(item => item.id !== kandidatId)
   };
 }
+
+/**
+ * Menghapus seluruh kandidat sekaligus (membersihkan data dummy untuk mulai dari lembar kosong)
+ * @param {Object} state - State pemilihan
+ * @returns {Object} State baru dengan daftar kandidat kosong
+ */
+export function hapusSemuaKandidatDariState(state) {
+  return {
+    ...state,
+    kandidat: [],
+    suaraTidakSah: 0,
+    riwayatUndo: []
+  };
+}

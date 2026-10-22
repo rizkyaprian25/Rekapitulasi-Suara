@@ -70,7 +70,13 @@
     <!-- DAFTAR KANDIDAT & TOMBOL HITUNG CEPAT SEKALI KLIK -->
     <main>
       <div class="candidates-section-header">
-        <h2 class="section-title">Perolehan Suara Kandidat</h2>
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <h2 class="section-title">Perolehan Suara Kandidat</h2>
+          <button id="btn-hapus-semua-kandidat" class="btn btn-danger-subtle" style="font-size: 0.75rem; padding: 0.25rem 0.65rem;" title="Hapus semua kandidat untuk memulai dari lembar kosong">
+            <span>🗑️</span>
+            <span>Hapus Semua Paslon</span>
+          </button>
+        </div>
         <span class="text-muted" style="font-size: 0.8125rem;">
           💡 Tip: Tekan angka di keyboard (1, 2, 3...) untuk tambah suara cepat
         </span>
@@ -166,24 +172,38 @@
 
   <!-- MODAL KONFIRMASI RESET -->
   <div id="modal-konfirmasi-reset" class="modal-backdrop" aria-hidden="true">
-    <div class="modal-card" style="max-width: 440px;">
+    <div class="modal-card" style="max-width: 480px;">
       <div class="modal-header">
-        <h3 class="modal-title" style="color: var(--accent-danger);">⚠️ Konfirmasi Reset Suara</h3>
+        <h3 class="modal-title" style="color: var(--accent-danger);">⚠️ Opsi Reset & Bersihkan Data</h3>
         <button id="btn-tutup-reset" class="btn-close-modal">&times;</button>
       </div>
       <div class="modal-body">
         <p style="font-size: 0.875rem; color: var(--text-secondary);">
-          Apakah Anda yakin ingin <strong>mengosongkan seluruh perolehan suara</strong> menjadi nol kembali?
+          Pilih tindakan reset yang ingin Anda jalankan:
         </p>
-        <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.5rem;">
-          Daftar kandidat tidak akan dihapus, hanya angka suara dan riwayat yang disetel ulang.
-        </p>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem;">
+          <div style="padding: 0.85rem; background: var(--bg-page); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <strong style="color: var(--text-primary); font-size: 0.875rem;">1. Kosongkan Perolehan Suara Saja</strong>
+            <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.25rem;">
+              Daftar pasangan calon tetap disimpan, hanya angka suara yang disetel ulang menjadi 0.
+            </p>
+            <button type="button" id="btn-eksekusi-reset" class="btn btn-secondary" style="margin-top: 0.5rem; width: 100%; font-weight: 700;">
+              🔄 Setel Suara Jadi 0
+            </button>
+          </div>
+          <div style="padding: 0.85rem; background: #fff1f2; border-radius: var(--radius-md); border: 1px solid #fecdd3;">
+            <strong style="color: #991b1b; font-size: 0.875rem;">2. Hapus Seluruh Paslon (Mulai dari Nol)</strong>
+            <p style="font-size: 0.8125rem; color: #991b1b; opacity: 0.85; margin-top: 0.25rem;">
+              Menghapus semua paslon contoh (dummy) agar Anda bisa menginput data kandidat asli dari lembar kosong.
+            </p>
+            <button type="button" id="btn-eksekusi-hapus-semua" class="btn btn-danger-subtle" style="margin-top: 0.5rem; width: 100%; background-color: var(--accent-danger); color: #fff; font-weight: 700;">
+              🗑️ Hapus Semua Paslon Dummy
+            </button>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
-        <button type="button" id="btn-batal-reset" class="btn btn-secondary">Batalkan</button>
-        <button type="button" id="btn-eksekusi-reset" class="btn btn-danger-subtle" style="background-color: var(--accent-danger); color: #fff;">
-          Ya, Kosongkan Suara
-        </button>
+        <button type="button" id="btn-batal-reset" class="btn btn-secondary">Tutup</button>
       </div>
     </div>
   </div>
