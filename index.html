@@ -5,8 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rekapitulasi Suara OSIS — SMPN 3 Cibungbulang</title>
   <meta name="description" content="Aplikasi Web Rekapitulasi dan Perhitungan Suara Pemilihan Ketua dan Wakil Ketua OSIS SMPN 3 Cibungbulang">
+  
+  <!-- Konfigurasi PWA & Offline Support -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="QuickCount OSIS">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+
   <link rel="stylesheet" href="src/styles/main.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗳️</text></svg>">
 </head>
 <body>
 
@@ -20,28 +29,45 @@
         <div class="brand-meta">
           <h1 id="header-title">Pemilihan Ketua & Wakil Ketua OSIS</h1>
           <p id="header-subtitle">SMPN 3 Cibungbulang — Periode 2026/2027</p>
+          <span id="offline-badge" class="badge-offline" title="Aplikasi dapat digunakan tanpa sambungan internet">🟢 Siap Digunakan Offline (PWA)</span>
         </div>
       </div>
       
       <div class="header-actions">
         <button id="btn-modal-tambah" class="btn btn-primary" title="Tambah Kandidat Baru">
           <span>➕</span>
-          <span>Tambah Kandidat</span>
+          <span>Tambah Paslon</span>
+        </button>
+
+        <button id="btn-backup-json" class="btn btn-secondary" title="Unduh dan simpan data rekapitulasi ke file JSON">
+          <span>💾</span>
+          <span>Simpan JSON</span>
+        </button>
+
+        <button id="btn-restore-json" class="btn btn-secondary" title="Pulihkan data rekapitulasi dari file JSON">
+          <span>📥</span>
+          <span>Pulihkan JSON</span>
+        </button>
+        <input type="file" id="input-file-restore" accept=".json,application/json" style="display: none;">
+
+        <button id="btn-cetak-laporan" class="btn btn-secondary" title="Cetak Berita Acara Rekapitulasi">
+          <span>🖨️</span>
+          <span>Cetak Acara</span>
         </button>
 
         <button id="btn-toggle-sound" class="btn btn-secondary" title="Nyalakan / Matikan Suara Klik">
           <span id="sound-icon">🔊</span>
-          <span id="sound-label">Suara Aktif</span>
+          <span id="sound-label">Suara</span>
         </button>
 
-        <button id="btn-cetak-laporan" class="btn btn-secondary" title="Cetak Berita Acara Rekapitulasi">
-          <span>🖨️</span>
-          <span>Cetak Berita Acara</span>
+        <button id="btn-pwa-install" class="btn btn-secondary" style="display: none; background: #ecfdf5; border-color: #a7f3d0; color: #065f46;" title="Pasang aplikasi ke layar utama / desktop">
+          <span>📲</span>
+          <span>Pasang App</span>
         </button>
 
         <button id="btn-reset-modal" class="btn btn-danger-subtle" title="Setel Ulang Perhitungan Suara">
           <span>🔄</span>
-          <span>Reset Suara</span>
+          <span>Reset</span>
         </button>
       </div>
     </header>
@@ -267,6 +293,12 @@
       </div>
     </div>
   </section>
+
+  <!-- NOTIFIKASI TOAST MELAYANG -->
+  <div id="toast-notif" class="toast-notification" aria-live="assertive" role="status">
+    <span id="toast-icon">✅</span>
+    <span id="toast-message">Pesan notifikasi</span>
+  </div>
 
   <!-- SKRIP APLIKASI UTAMA (ES MODULES) -->
   <script type="module" src="src/app.js"></script>

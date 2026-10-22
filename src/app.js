@@ -15,6 +15,7 @@ import {
   hapusKandidatDariState,
   hapusSemuaKandidatDariState
 } from './features/tally/tallyEngine.js';
+import { unduhBerkasJson, validasiDanParseBackup } from './features/backup/backupEngine.js';
 
 // State global aplikasi di memori
 let appState = muatStatePemilihan();
@@ -52,6 +53,36 @@ const soundLabel = document.getElementById('sound-label');
 const btnCetakLaporan = document.getElementById('btn-cetak-laporan');
 const btnTambahTidakSah = document.getElementById('btn-tambah-tidak-sah');
 
+// Elemen Cadangkan & Pulihkan JSON serta PWA
+const btnBackupJson = document.getElementById('btn-backup-json');
+const btnRestoreJson = document.getElementById('btn-restore-json');
+const inputFileRestore = document.getElementById('input-file-restore');
+const btnPwaInstall = document.getElementById('btn-pwa-install');
+const offlineBadge = document.getElementById('offline-badge');
+const toastNotif = document.getElementById('toast-notif');
+const toastMessage = document.getElementById('toast-message');
+const toastIcon = document.getElementById('toast-icon');
+
+let deferredPrompt = null;
+let toastTimeoutId = null;
+
+/**
+ * Menampilkan pesan toast melayang di bagian atas layar
+ * @param {string} pesan - Pesan yang ditampilkan
+ * @param {string} ikon - Ikon emoji
+ */
+function tampilkanToast(pesan, ikon = '✅') {
+  if (!toastNotif) return;
+  toastIcon.textContent = ikon;
+  toastMessage.textContent = pesan;
+  toastNotif.classList.add('is-visible');
+
+  if (toastTimeoutId) clearTimeout(toastTimeoutId);
+  toastTimeoutId = setTimeout(() => {
+    toastNotif.classList.remove('is-visible');
+  }, 3500);
+}
+
 let undoTimeoutId = null;
 
 /**
@@ -71,7 +102,70 @@ function inisialisasiAplikasi() {
   siapkanPilihanWarna();
   pasangEventListeners();
   perbaruiTampilanAudio();
+  inisialisasiPwaDanOffline();
   renderSemua();
+}
+
+/**
+ * Menginisialisasi kemampuan Offline (Service Worker) dan instalasi PWA
+ */
+function inisialisasiPwaDanOffline() {
+  // 1. Daftarkan Service Worker untuk offline caching aset
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then((reg) => {
+          console.log('✅ Service Worker berhasil terpasang (Offline Ready):', reg.scope);
+        })
+        .catch((err) => {
+          console.warn('⚠️ Gagal memasang Service Worker:', err);
+        });
+    });
+  }
+
+  // 2. Pemantauan status jaringan secara langsung (Online / Offline)
+  const updateStatusKoneksi = () => {
+    if (offlineBadge) {
+      if (navigator.onLine) {
+        offlineBadge.textContent = '🟢 Siap Digunakan Offline (PWA)';
+        offlineBadge.style.backgroundColor = '#ecfdf5';
+        offlineBadge.style.color = '#065f46';
+        offlineBadge.style.borderColor = '#a7f3d0';
+      } else {
+        offlineBadge.textContent = '⚡ Mode Offline Aktif (Tanpa Internet)';
+        offlineBadge.style.backgroundColor = '#fef3c7';
+        offlineBadge.style.color = '#92400e';
+        offlineBadge.style.borderColor = '#fde68a';
+      }
+    }
+  };
+
+  window.addEventListener('online', updateStatusKoneksi);
+  window.addEventListener('offline', updateStatusKoneksi);
+  updateStatusKoneksi();
+
+  // 3. Tangkap event prompt instalasi PWA (Add to Homescreen / Desktop)
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (btnPwaInstall) {
+      btnPwaInstall.style.display = 'inline-flex';
+    }
+  });
+
+  if (btnPwaInstall) {
+    btnPwaInstall.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          btnPwaInstall.style.display = 'none';
+          tampilkanToast('Aplikasi berhasil dipasang ke perangkat Anda!', '🎉');
+        }
+        deferredPrompt = null;
+      }
+    });
+  }
 }
 
 /**
@@ -478,6 +572,64 @@ function pasangEventListeners() {
     siapkanDataCetak();
     window.print();
   });
+
+  // Cadangkan / Unduh Berkas JSON
+  if (btnBackupJson) {
+    btnBackupJson.addEventListener('click', () => {
+      unduhBerkasJson(appState);
+      tampilkanToast('Berkas cadangan JSON berhasil diunduh!', '💾');
+    });
+  }
+
+  // Pulihkan Data dari Berkas JSON
+  if (btnRestoreJson && inputFileRestore) {
+    btnRestoreJson.addEventListener('click', () => {
+      inputFileRestore.click();
+    });
+
+    inputFileRestore.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const kontenJson = event.target.result;
+        const hasil = validasiDanParseBackup(kontenJson);
+
+        if (!hasil.valid) {
+          alert('❌ Gagal Memulihkan Data:\n' + hasil.pesanError);
+          return;
+        }
+
+        const jumlahPaslon = hasil.stateBaru.kandidat.length;
+        const totalSuara = hasil.stateBaru.kandidat.reduce((sum, k) => sum + (k.suara || 0), 0);
+        const pesanKonfirmasi = `Konfirmasi Pemulihan Data Pemilihan:\n\n` +
+          `• Sekolah: ${hasil.stateBaru.namaSekolah}\n` +
+          `• Periode: ${hasil.stateBaru.tahunPeriode}\n` +
+          `• Jumlah Paslon: ${jumlahPaslon}\n` +
+          `• Total Suara Sah: ${totalSuara.toLocaleString('id-ID')}\n` +
+          `• Suara Rusak: ${hasil.stateBaru.suaraTidakSah || 0}\n\n` +
+          `Apakah Anda yakin ingin memulihkan data ini dan mengganti data yang aktif di layar?`;
+
+        if (confirm(pesanKonfirmasi)) {
+          appState = hasil.stateBaru;
+          simpanStatePemilihan(appState);
+          renderSemua();
+          tampilkanToast('Data pemilihan berhasil dipulihkan dari berkas JSON!', '📥');
+        }
+
+        // Reset input file agar berkas yang sama bisa dipilih kembali jika diinginkan
+        inputFileRestore.value = '';
+      };
+
+      reader.onerror = () => {
+        alert('Terjadi kesalahan teknis saat membaca berkas JSON.');
+        inputFileRestore.value = '';
+      };
+
+      reader.readAsText(file);
+    });
+  }
 
   // Keyboard Shortcuts Cepat untuk Operator Hitung
   window.addEventListener('keydown', (e) => {

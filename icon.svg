@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="boxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Latar Belakang Kotak Pemilihan Lingkaran Lembut -->
+  <rect width="512" height="512" rx="112" fill="url(#boxGrad)" filter="url(#shadow)"/>
+
+  <!-- Slot Kotak Suara Atas -->
+  <rect x="156" y="196" width="200" height="18" rx="9" fill="#1e3a8a"/>
+
+  <!-- Kertas Surat Suara Masuk -->
+  <g transform="translate(196, 76)">
+    <rect width="120" height="150" rx="12" fill="url(#cardGrad)" stroke="#cbd5e1" stroke-width="4" filter="url(#shadow)"/>
+    <!-- Ceklis Centang Hijau di Kertas Suara -->
+    <circle cx="60" cy="65" r="28" fill="#10b981"/>
+    <path d="M47 65 L56 74 L74 54" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="28" y1="110" x2="92" y2="110" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/>
+    <line x1="36" y1="124" x2="84" y2="124" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- Kotak Suara Utama -->
+  <path d="M106 220 L406 220 L376 430 Q376 446 360 446 L152 446 Q136 446 136 430 Z" fill="#2563eb" stroke="#1d4ed8" stroke-width="6"/>
+
+  <!-- Garis Aksen & Teks OSIS -->
+  <rect x="180" y="290" width="152" height="60" rx="10" fill="#ffffff" opacity="0.15"/>
+  <text x="256" y="332" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="34" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="4">OSIS</text>
+  <text x="256" y="380" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="16" font-weight="700" fill="#bfdbfe" text-anchor="middle">SMPN 3 CIBUNGBULANG</text>
+</svg>

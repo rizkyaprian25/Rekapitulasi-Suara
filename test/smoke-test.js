@@ -14,6 +14,7 @@ import {
   hapusKandidatDariState,
   hapusSemuaKandidatDariState
 } from '../src/features/tally/tallyEngine.js';
+import { buatStringBackup, validasiDanParseBackup } from '../src/features/backup/backupEngine.js';
 
 console.log('🧪 Memulai Smoke Test Kualitas Sistem Rekapitulasi Suara OSIS...\n');
 
@@ -121,6 +122,37 @@ console.log('\n4. Menguji penambahan dan penghapusan kandidat dinamis...');
   assert.equal(state.kandidat.length, 0, 'Daftar kandidat harus kosong');
   assert.equal(state.suaraTidakSah, 0, 'Suara tidak sah harus reset ke 0');
   console.log('   ✅ Operasi CRUD kandidat dinamis & bersihkan dummy berhasil.');
+}
+
+// 5. Pengujian Cadangkan & Pulihkan Berkas JSON
+console.log('\n5. Menguji mekanisme cadangkan dan pulihkan data JSON...');
+{
+  const stateUji = structuredClone(DATA_AWAL_PEMILIHAN);
+  stateUji.kandidat[0].suara = 125;
+  stateUji.kandidat[1].suara = 89;
+  stateUji.suaraTidakSah = 4;
+
+  // Ekspor ke JSON
+  const jsonString = buatStringBackup(stateUji);
+  assert.ok(jsonString.includes('SMPN 3 Cibungbulang'), 'JSON harus mencantumkan nama sekolah');
+  assert.ok(jsonString.includes('125'), 'JSON harus menyimpan jumlah suara');
+
+  // Pulihkan dari JSON valid
+  const hasilPulih = validasiDanParseBackup(jsonString);
+  assert.equal(hasilPulih.valid, true, 'Parsing JSON valid harus sukses');
+  assert.equal(hasilPulih.stateBaru.kandidat.length, 2);
+  assert.equal(hasilPulih.stateBaru.kandidat[0].suara, 125);
+  assert.equal(hasilPulih.stateBaru.suaraTidakSah, 4);
+
+  // Uji pemulihan dari JSON rusak (format JSON salah)
+  const hasilRusak = validasiDanParseBackup('{ "rusak": true, ');
+  assert.equal(hasilRusak.valid, false, 'Harus gagal jika JSON rusak');
+
+  // Uji pemulihan dari JSON dengan struktur tidak lengkap
+  const hasilTanpaKandidat = validasiDanParseBackup(JSON.stringify({ namaSekolah: 'SMP' }));
+  assert.equal(hasilTanpaKandidat.valid, false, 'Harus gagal jika tidak ada array kandidat');
+
+  console.log('   ✅ Modul cadangkan & pulihkan JSON tervalidasi 100%.');
 }
 
 console.log('\n🎉 SELURUH SMOKE TEST QUALITY GATE LULUS TANPA KESALAHAN! (0 Errors)\n');

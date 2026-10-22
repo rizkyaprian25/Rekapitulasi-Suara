@@ -12,33 +12,42 @@ Dirancang khusus untuk operator TPS, saksi, dan panitia KPPS OSIS dengan antarmu
    - Tambah pasangan calon (Nomor Urut, Nama Ketua & Wakil, Kelas, Visi/Slogan).
    - Pemilihan palet warna tema aksen kartu paslon.
    - Penomoran urut otomatis dan pencegahan duplikasi nomor paslon.
+   - Hapus paslon perorangan atau bersihkan seluruh data contoh (dummy) sekaligus.
 
-2. **Hitung Suara Sekali Klik (+1 Suara Taktil):**
+2. **Dukungan PWA & Berjalan 100% Offline:**
+   - Dilengkapi *Service Worker* dan *Web App Manifest*.
+   - Dapat diinstal ke homescreen/desktop dan beroperasi tanpa sambungan internet sama sekali di TPS.
+
+3. **Cadangkan & Pulihkan Data JSON (Backup & Restore):**
+   - **Simpan JSON:** Mengunduh seluruh data pemilihan, kandidat, dan riwayat perolehan suara ke file `.json`.
+   - **Pulihkan JSON:** Mengunggah file `.json` cadangan untuk memulihkan seluruh data pemilihan kapan saja secara aman.
+
+4. **Hitung Suara Sekali Klik (+1 Suara Taktil):**
    - Tombol hitung suara super responsif dengan target sentuh besar.
    - Umpan balik audio sintetis lonceng klik via **Web Audio API** bawaan browser (tanpa aset file audio eksternal).
    - Umpan balik haptik (*vibration*) saat dioperasikan di smartphone/tablet panitia.
    - Pilihan tambah cepat (+5 dan +10 suara).
 
-3. **Kalkulasi & Persentase Real-Time:**
+5. **Kalkulasi & Persentase Real-Time:**
    - Perhitungan persentase perolehan suara otomatis berformat angka tabular.
    - Bilah kemajuan (*progress bar*) visual sesuai warna tema paslon.
    - Lencana penanda otomatis paslon yang sedang unggul (*leading candidate*).
 
-4. **Tombol Pembatalan Cepat (Undo Action):**
+6. **Tombol Pembatalan Cepat (Undo Action):**
    - Bilah mengambang (*floating bar*) untuk membatalkan suara terakhir jika petugas salah dengar atau salah klik.
 
-5. **Pencatatan Surat Suara Tidak Sah / Rusak:**
+7. **Pencatatan Surat Suara Tidak Sah / Rusak:**
    - Menjamin akuntabilitas total surat suara yang masuk di TPS.
 
-6. **Penyimpanan Lokal Otomatis (LocalStorage Persistence):**
-   - Data suara tersimpan aman di peramban, tidak hilang saat halaman di-refresh atau koneksi terputus.
+8. **Penyimpanan Lokal Otomatis (LocalStorage Persistence):**
+   - Data suara tersimpan aman di peramban, tidak hilang saat halaman di-refresh.
 
-7. **Pintasan Keyboard Cepat (Keyboard Shortcuts):**
+9. **Pintasan Keyboard Cepat (Keyboard Shortcuts):**
    - Tekan tombol angka `1`, `2`, `3` ... pada keyboard untuk langsung menambah suara paslon terkait.
    - Tekan `U` atau `Ctrl+Z` untuk membatalkan suara terakhir.
 
-8. **Cetak Berita Acara Resmi (Print to PDF):**
-   - Format cetak formal yang rapi, lengkap dengan kop KPPS OSIS, tabel perolehan suara sah/rusak, dan kolom tanda tangan saksi serta Pembina OSIS.
+10. **Cetak Berita Acara Resmi (Print to PDF):**
+   - Format cetak formal yang rapi untuk SMPN 3 Cibungbulang, lengkap dengan kop KPPS OSIS, tabel perolehan suara sah/rusak, dan kolom tanda tangan saksi serta Pembina OSIS.
 
 ---
 
